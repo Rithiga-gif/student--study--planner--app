@@ -1,78 +1,54 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 
 app = Flask(__name__)
 
-# Store tasks
 tasks = []
-
-# Store study schedules
-schedule_list = []
+schedule = []
 
 
-# ---------------- HOME PAGE ----------------
 @app.route("/")
 def home():
     return render_template("home.html")
 
 
-# ---------------- LOGIN PAGE ----------------
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        email = request.form.get("email")
-        password = request.form.get("password")
-
-        return render_template("dashboard.html")
-
+        return redirect(url_for("dashboard"))
     return render_template("login.html")
 
 
-# ---------------- DASHBOARD PAGE ----------------
 @app.route("/dashboard")
 def dashboard():
     return render_template("dashboard.html")
 
 
-# My Tasks
 @app.route("/tasks", methods=["GET", "POST"])
 def task_page():
     if request.method == "POST":
-        task = request.form.get("task")
+        task_name = request.form.get("task")
 
-        if task:
+        if task_name:
             tasks.append({
-                "name": task,
+                "name": task_name,
                 "completed": False
             })
+
+        return redirect(url_for("task_page"))
 
     return render_template("tasks.html", tasks=tasks)
 
 
-# Complete Tasks
 @app.route("/complete", methods=["POST"])
-def complete_tasks():
+def complete():
     completed = request.form.getlist("completed")
 
     for i, task in enumerate(tasks):
         task["completed"] = str(i) in completed
 
-    total = len(tasks)
-    completed_count = sum(task["completed"] for task in tasks)
-    pending_count = total - completed_count
+    return redirect(url_for("task_page"))
 
-    if total > 0:
-        progress_percent = (completed_count / total) * 100
-    else:
-        progress_percent = 0
 
-    return render_template(
-        "progress.html",
-        total_tasks=total,
-        completed_tasks=completed_count,
-        pending_tasks=pending_count,
-        progress=progress_percent
-    )
-# ---------------- STUDY SCHEDULE PAGE ----------------
 @app.route("/schedule", methods=["GET", "POST"])
 def schedule_page():
     if request.method == "POST":
@@ -80,34 +56,37 @@ def schedule_page():
         subject = request.form.get("subject")
 
         if time and subject:
-            schedule_list.append({
+            schedule.append({
                 "time": time,
                 "subject": subject
             })
 
-    return render_template(
-        "schedule.html",
-        schedule=schedule_list
-    )
+        return redirect(url_for("schedule_page"))
+
+    return render_template("schedule.html", schedule=schedule)
 
 
-# ---------------- PROGRESS PAGE ----------------
 @app.route("/progress")
-def progress_page():
+def progress():
     total_tasks = len(tasks)
-    completed_tasks = 0
-    pending_tasks = total_tasks
-    progress_percent = 0
+    completed_tasks = sum(
+        1 for task in tasks if task["completed"]
+    )
+    pending_tasks = total_tasks - completed_tasks
+
+    if total_tasks > 0:
+        percentage = (completed_tasks / total_tasks) * 100
+    else:
+        percentage = 0
 
     return render_template(
         "progress.html",
         total_tasks=total_tasks,
         completed_tasks=completed_tasks,
         pending_tasks=pending_tasks,
-        progress=progress_percent
+        progress=percentage
     )
 
 
-# ---------------- RUN FLASK ----------------
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run()
