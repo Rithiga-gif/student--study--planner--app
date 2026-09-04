@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Study Schedule - Student Study Planner</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+        }
+
+        .header {
+            background: #4f46e5;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 35px auto;
+        }
+
+        .box {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        .schedule-form {
+            display: grid;
+            gap: 12px;
+        }
+
+        .schedule-form input {
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        button {
+            padding: 12px 18px;
+            border: none;
+            border-radius: 8px;
+            background: #4f46e5;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #3730a3;
+        }
+
+        .schedule-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin: 10px 0;
+            background: #f4f7fb;
+            border-radius: 10px;
+        }
+
+        .time {
+            font-weight: bold;
+            color: #4f46e5;
+        }
+
+        .subject {
+            color: #333;
+        }
+
+        .navigation {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .navigation a {
+            text-decoration: none;
+            margin: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>📅 Study Schedule</h1>
+        <p>Plan your study time</p>
+    </div>
+
+    <div class="container">
+
+        <div class="box">
+            <h2>➕ Add Study Schedule</h2>
+
+            <form method="POST" action="/schedule" class="schedule-form">
+
+                <input
+                    type="text"
+                    name="time"
+                    placeholder="Enter time (Example: 9:00 AM)"
+                    required
+                >
+
+                <input
+                    type="text"
+                    name="subject"
+                    placeholder="Enter subject or activity"
+                    required
+                >
+
+                <button type="submit">Add Schedule</button>
+
+            </form>
+        </div>
+
+        <div class="box">
+            <h2>🗓️ Today's Schedule</h2>
+
+            {% if schedule %}
+
+                {% for item in schedule %}
+
+                    <div class="schedule-item">
+
+                        <span class="time">
+                            🕐 {{ item.time }}
+                        </span>
+
+                        <span class="subject">
+                            {{ item.subject }}
+                        </span>
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <p>No schedule added yet.</p>
+
+            {% endif %}
+
+        </div>
+
+        <div class="navigation">
+
+            <a href="/tasks">
+                <button type="button">📝 My Tasks</button>
+            </a>
+
+            <a href="/progress">
+                <button type="button">📊 Progress</button>
+            </a>
+
+            <a href="/dashboard">
+                <button type="button">🏠 Dashboard</button>
+            </a>
+
+        </div>
+
+    </div>
+
+</body>
+</html>
